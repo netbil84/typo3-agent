@@ -190,6 +190,7 @@ class AgentService implements LoggerAwareInterface
                     $this->serializeForLlm($messages),
                     $tools,
                     $onDelta,
+                    'task-' . $taskUid,
                 );
 
                 // Append assistant message
