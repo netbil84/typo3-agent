@@ -23,10 +23,17 @@ let NewTaskElement = class extends LitElement {
     this.workspaceTitle = "";
     this.submitting = false;
     this.errorMessage = "";
+    this.selectedModel = "";
   }
   // No Shadow DOM — use TYPO3 backend Bootstrap CSS
   createRenderRoot() {
     return this;
+  }
+  /** Models from TYPO3.settings.Agent.models (PromptRenderer), default first. */
+  get models() {
+    const settings = TYPO3?.settings?.Agent;
+    const models = settings?.models;
+    return Array.isArray(models) ? models : [];
   }
   get isLive() {
     return this.workspaceId <= 0;
@@ -40,6 +47,7 @@ let NewTaskElement = class extends LitElement {
     formData.append("table", this.table);
     formData.append("uid", String(this.uid));
     formData.append("return_url", this.returnUrl);
+    formData.append("model", this.selectedModel || this.models[0]?.value || "");
     formData.append("attachments", JSON.stringify(attachments.map((a) => ({
       uid: a.uid,
       identifier: a.identifier,
@@ -72,12 +80,35 @@ let NewTaskElement = class extends LitElement {
     return html`
       <div>
         ${this.errorMessage ? html`<div class="alert alert-danger">${this.errorMessage}</div>` : nothing}
+        ${this.renderModelSelect()}
         <hn-agent-message-composer
             ?disabled=${this.submitting}
             placeholder=${this.placeholder}
             field-name="hn-agent-new-task"
             @submit=${this.onComposerSubmit}>
         </hn-agent-message-composer>
+      </div>
+    `;
+  }
+  renderModelSelect() {
+    const models = this.models;
+    if (models.length < 2) {
+      return nothing;
+    }
+    const label = TYPO3?.lang?.["newTask.model.label"] ?? "Model";
+    return html`
+      <div class="mb-2 d-flex align-items-center gap-2">
+        <label class="form-label mb-0" for="hn-agent-new-task-model">${label}</label>
+        <select id="hn-agent-new-task-model"
+                class="form-select form-select-sm w-auto"
+                ?disabled=${this.submitting}
+                @change=${(e) => {
+      this.selectedModel = e.target.value;
+    }}>
+          ${models.map((model) => html`
+            <option value=${model.value} ?selected=${model.value === (this.selectedModel || models[0].value)}>${model.label}</option>
+          `)}
+        </select>
       </div>
     `;
   }
@@ -124,6 +155,9 @@ __decorateClass([
 __decorateClass([
   state()
 ], NewTaskElement.prototype, "errorMessage", 2);
+__decorateClass([
+  state()
+], NewTaskElement.prototype, "selectedModel", 2);
 NewTaskElement = __decorateClass([
   customElement("hn-agent-new-task")
 ], NewTaskElement);

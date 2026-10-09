@@ -111,6 +111,10 @@
                 <source>Live</source>
                 <target>Live</target>
             </trans-unit>
+            <trans-unit id="newTask.model.label" resname="newTask.model.label">
+                <source>Model</source>
+                <target>Modell</target>
+            </trans-unit>
             <trans-unit id="workspace.callout.selectWorkspace" resname="workspace.callout.selectWorkspace">
                 <source>Please switch to a workspace via the workspace selector in the top toolbar before starting a task. In the Live workspace changes go public immediately, so the agent does not write there.</source>
                 <target>Bitte wechsle über die Workspace-Auswahl in der oberen Toolbar in einen Workspace, bevor du eine Aufgabe startest. Im Live-Workspace werden Änderungen sofort öffentlich, daher schreibt der Agent dort nicht.</target>

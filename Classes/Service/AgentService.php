@@ -39,6 +39,7 @@ class AgentService implements LoggerAwareInterface
         private readonly AgentInstructionRepository $instructionRepository,
         private readonly InstructionTextFormatter $instructionTextFormatter,
         private readonly ChangeTracker $changeTracker,
+        private readonly ModelRegistry $modelRegistry,
     ) {}
 
     /**
@@ -119,7 +120,10 @@ class AgentService implements LoggerAwareInterface
             }
         }
 
-        return $this->runLoop($taskUid, $messages, $progress);
+        // A model removed from the configuration falls back to the default.
+        $model = $this->modelRegistry->resolve((string)($task['model'] ?? ''));
+
+        return $this->runLoop($taskUid, $messages, $progress, $model);
     }
 
     /**
@@ -129,7 +133,7 @@ class AgentService implements LoggerAwareInterface
      *
      * @param callable(string, array): void|null $progress
      */
-    private function runLoop(int $taskUid, array $messages, ?callable $progress): array
+    private function runLoop(int $taskUid, array $messages, ?callable $progress, string $model): array
     {
         try {
             // Convert MCP tools to OpenAI format
@@ -191,6 +195,7 @@ class AgentService implements LoggerAwareInterface
                     $tools,
                     $onDelta,
                     'task-' . $taskUid,
+                    $model,
                 );
 
                 // Append assistant message

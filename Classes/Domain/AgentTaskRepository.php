@@ -203,8 +203,9 @@ class AgentTaskRepository
      *        Pre-built initial conversation (system + synthetic context + user).
      *        Persisted as JSON so AgentService::run() resumes from it on
      *        auto-start instead of synthesizing.
+     * @param string $model LLM model slug for this task; '' = extension default.
      */
-    public function insert(int $pid, int $cruserId, string $title, string $prompt, string $contextTable = '', int $contextUid = 0, string $returnUrl = '', int $workspaceId = 0, ?array $initialMessages = null): int
+    public function insert(int $pid, int $cruserId, string $title, string $prompt, string $contextTable = '', int $contextUid = 0, string $returnUrl = '', int $workspaceId = 0, ?array $initialMessages = null, string $model = ''): int
     {
         $now = time();
         $connection = $this->connectionPool->getConnectionForTable(self::TABLE);
@@ -224,6 +225,7 @@ class AgentTaskRepository
                 'context_uid' => $contextUid,
                 'return_url' => $returnUrl,
                 'workspace_id' => $workspaceId,
+                'model' => $model,
             ],
             $initialMessages !== null ? ['messages' => Types::JSON] : [],
         );

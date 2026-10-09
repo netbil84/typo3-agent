@@ -66,8 +66,9 @@ class LlmService implements LoggerAwareInterface
         array $tools = [],
         ?callable $onDelta = null,
         ?string $sessionId = null,
+        ?string $modelOverride = null,
     ): array {
-        $body = $this->buildRequestBody($messages, $tools, true, null, $sessionId);
+        $body = $this->buildRequestBody($messages, $tools, true, $modelOverride, $sessionId);
         $response = $this->executeRequest($body, true);
 
         return $this->parseSseStream(

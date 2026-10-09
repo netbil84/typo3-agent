@@ -10,6 +10,7 @@ use Hn\Agent\Domain\TaskStateMachine;
 use Hn\Agent\Service\AgentService;
 use Hn\Agent\Service\AttachmentService;
 use Hn\Agent\Service\ChangeTracker;
+use Hn\Agent\Service\ModelRegistry;
 use Hn\Agent\Service\InstructionTextFormatter;
 use Hn\Agent\Service\LlmService;
 use Hn\Agent\Service\ToolConverterService;
@@ -150,6 +151,7 @@ class AgentServiceTest extends FunctionalTestCase
             new AgentInstructionRepository($this->connectionPool),
             new InstructionTextFormatter(),
             new ChangeTracker($this->connectionPool, new AgentTaskRepository($this->connectionPool)),
+            new ModelRegistry(GeneralUtility::makeInstance(ExtensionConfiguration::class)),
         );
     }
 
@@ -358,6 +360,7 @@ class AgentServiceTest extends FunctionalTestCase
             new AgentInstructionRepository($this->connectionPool),
             new InstructionTextFormatter(),
             new ChangeTracker($this->connectionPool, new AgentTaskRepository($this->connectionPool)),
+            new ModelRegistry(GeneralUtility::makeInstance(ExtensionConfiguration::class)),
         );
 
         try {
@@ -433,6 +436,7 @@ class AgentServiceTest extends FunctionalTestCase
             new AgentInstructionRepository($this->connectionPool),
             new InstructionTextFormatter(),
             new ChangeTracker($this->connectionPool, new AgentTaskRepository($this->connectionPool)),
+            new ModelRegistry(GeneralUtility::makeInstance(ExtensionConfiguration::class)),
         );
 
         // Pass an unresolvable attachment (no such sys_file UID) — keeps the
@@ -506,6 +510,7 @@ class AgentServiceTest extends FunctionalTestCase
             new AgentInstructionRepository($this->connectionPool),
             new InstructionTextFormatter(),
             new ChangeTracker($this->connectionPool, new AgentTaskRepository($this->connectionPool)),
+            new ModelRegistry(GeneralUtility::makeInstance(ExtensionConfiguration::class)),
         );
     }
 
@@ -780,6 +785,7 @@ class AgentServiceTest extends FunctionalTestCase
             new AgentInstructionRepository($this->connectionPool),
             new InstructionTextFormatter(),
             new ChangeTracker($this->connectionPool, new AgentTaskRepository($this->connectionPool)),
+            new ModelRegistry(GeneralUtility::makeInstance(ExtensionConfiguration::class)),
         );
         $agentService->run($taskUid);
 
@@ -866,6 +872,7 @@ class AgentServiceTest extends FunctionalTestCase
             new AgentInstructionRepository($this->connectionPool),
             new InstructionTextFormatter(),
             new ChangeTracker($this->connectionPool, new AgentTaskRepository($this->connectionPool)),
+            new ModelRegistry(GeneralUtility::makeInstance(ExtensionConfiguration::class)),
         );
         $agentService->run($taskUid);
 
@@ -944,6 +951,7 @@ class AgentServiceTest extends FunctionalTestCase
             new AgentInstructionRepository($this->connectionPool),
             new InstructionTextFormatter(),
             new ChangeTracker($this->connectionPool, new AgentTaskRepository($this->connectionPool)),
+            new ModelRegistry(GeneralUtility::makeInstance(ExtensionConfiguration::class)),
         );
         $agentService->run($taskUid);
 

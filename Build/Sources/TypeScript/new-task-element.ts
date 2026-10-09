@@ -21,6 +21,14 @@ export class NewTaskElement extends LitElement {
 
   @state() private submitting = false;
   @state() private errorMessage = '';
+  @state() private selectedModel = '';
+
+  /** Models from TYPO3.settings.Agent.models (PromptRenderer), default first. */
+  private get models(): {value: string; label: string}[] {
+    const settings = (TYPO3?.settings as Record<string, unknown> | undefined)?.Agent as Record<string, unknown> | undefined;
+    const models = settings?.models;
+    return Array.isArray(models) ? models as {value: string; label: string}[] : [];
+  }
 
   private get isLive(): boolean {
     // workspaceId === 0 means Live workspace (or attribute not set at all).
@@ -37,6 +45,7 @@ export class NewTaskElement extends LitElement {
     formData.append('table', this.table);
     formData.append('uid', String(this.uid));
     formData.append('return_url', this.returnUrl);
+    formData.append('model', this.selectedModel || this.models[0]?.value || '');
     formData.append('attachments', JSON.stringify(attachments.map(a => ({
       uid: a.uid,
       identifier: a.identifier,
@@ -75,12 +84,35 @@ export class NewTaskElement extends LitElement {
         ${this.errorMessage
           ? html`<div class="alert alert-danger">${this.errorMessage}</div>`
           : nothing}
+        ${this.renderModelSelect()}
         <hn-agent-message-composer
             ?disabled=${this.submitting}
             placeholder=${this.placeholder}
             field-name="hn-agent-new-task"
             @submit=${this.onComposerSubmit}>
         </hn-agent-message-composer>
+      </div>
+    `;
+  }
+
+  private renderModelSelect() {
+    const models = this.models;
+    // A single (default) model needs no choice.
+    if (models.length < 2) {
+      return nothing;
+    }
+    const label = TYPO3?.lang?.['newTask.model.label'] ?? 'Model';
+    return html`
+      <div class="mb-2 d-flex align-items-center gap-2">
+        <label class="form-label mb-0" for="hn-agent-new-task-model">${label}</label>
+        <select id="hn-agent-new-task-model"
+                class="form-select form-select-sm w-auto"
+                ?disabled=${this.submitting}
+                @change=${(e: Event) => { this.selectedModel = (e.target as HTMLSelectElement).value; }}>
+          ${models.map(model => html`
+            <option value=${model.value} ?selected=${model.value === (this.selectedModel || models[0].value)}>${model.label}</option>
+          `)}
+        </select>
       </div>
     `;
   }

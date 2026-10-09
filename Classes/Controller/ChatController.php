@@ -11,6 +11,7 @@ use Hn\Agent\Domain\TaskStatus;
 use Hn\Agent\Renderer\PromptRenderer;
 use Hn\Agent\Service\AgentService;
 use Hn\Agent\Service\AttachmentService;
+use Hn\Agent\Service\ModelRegistry;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
@@ -54,6 +55,7 @@ class ChatController
         private readonly ConnectionPool             $connectionPool,
         private readonly PromptRenderer             $promptRenderer,
         private readonly AgentInstructionRepository $instructionRepository,
+        private readonly ModelRegistry              $modelRegistry,
     )
     {
     }
@@ -299,6 +301,7 @@ class ChatController
         $contextTable = (string)($body['table'] ?? '');
         $contextUid = (int)($body['uid'] ?? 0);
         $returnUrl = GeneralUtility::sanitizeLocalUrl((string)($body['return_url'] ?? ''));
+        $model = $this->modelRegistry->resolve((string)($body['model'] ?? ''));
 
         // FAL permission checks for attachments run against the current
         // BE_USER (= task owner) inside buildInitialMessages.
@@ -322,6 +325,7 @@ class ChatController
             $returnUrl,
             $workspaceId,
             $initialMessages,
+            $model,
         );
         return new RedirectResponse((string)$this->uriBuilder->buildUriFromRoute('web_typo3_agent_tasks.show', [
             'task' => $taskUid,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hn\Agent\Renderer;
 
+use Hn\Agent\Service\ModelRegistry;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
@@ -17,6 +18,7 @@ class PromptRenderer
         private readonly UriBuilder $uriBuilder,
         private readonly PageRenderer $pageRenderer,
         private readonly DefaultUploadFolderResolver $defaultUploadFolderResolver,
+        private readonly ModelRegistry $modelRegistry,
     ) {}
 
     /**
@@ -65,6 +67,12 @@ class PromptRenderer
             'elementBrowserUrl',
             (string)$this->uriBuilder->buildUriFromRoute('wizard_element_browser'),
         );
+        // Model picker of the new-task form: [{value, label}], default first.
+        $models = [];
+        foreach ($this->modelRegistry->getAvailableModels() as $slug => $label) {
+            $models[] = ['value' => $slug, 'label' => $label];
+        }
+        $this->pageRenderer->addInlineSetting('Agent', 'models', $models);
     }
 
     /**
